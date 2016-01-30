@@ -25,14 +25,28 @@ car.Root.Name.LocalName
 
 let parse (xd:XDocument) =
   let schema = MessageSchema()
-  let rec parseAux (xe:XElement) (ms:MessageSchema) =
+  let rec parseAux (xe:XElement) =
     match ln xe with
     | "messageSchema" -> 
-      ms.Package <- xe.Attribute(xn "package").Value
-      parseAux (xe.Descendants().First()) (ms:MessageSchema) 
+      schema.Package <- xe.Attribute(xn "package").Value
+      parseAux (xe.Descendants().First())
+    | "types" -> 
+      parseTypes xe (xe.Descendants())
+    | "message" -> 
+      parseMessage xe (xe.Descendants())
     | _ as x ->
       Console.WriteLine("Unknowun element " + x)
-      ms
-  parseAux xd.Root schema
+  and parseTypes (parent) (xes:XElement seq) =
+    for xe in xes do
+      // TODO
+      ()
+    parseAux (parent.ElementsAfterSelf().First())
+  and parseMessage (parent) (xes:XElement seq) =
+    for xe in xes do
+      // TODO
+      ()
+    parseAux (parent.ElementsAfterSelf().First())
+
+  parseAux xd.Root
 
 parse car
