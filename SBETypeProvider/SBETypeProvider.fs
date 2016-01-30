@@ -30,6 +30,7 @@ type SBEProvider (config : TypeProviderConfig) as this =
     myType.AddMember(myProp)
 
     let myType2 = ProvidedTypeDefinition(asm, ns, "MyStruct", Some typeof<ValueType>)
+
     let myProp2 = ProvidedProperty("MyProperty2", typeof<uint16>, IsStatic = true,
                                     GetterCode = (fun args -> <@@ 42us @@>))
     myType2.AddMember(myProp2)
