@@ -51,12 +51,14 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="AssemblyAttributes.fs" />
     <Compile Include="ProvidedTypes.fsi" />
     <Compile Include="ProvidedTypes.fs" />
     <Compile Include="DebugProvidedTypes.fs" />
     <Compile Include="SBETypeProvider.fs" />
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
+    <Compile Include="SBEElements.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

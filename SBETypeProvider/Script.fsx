@@ -1,8 +1,12 @@
-﻿// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
-// for more guidance on F# programming.
+﻿//#load "ProvidedTypes.fs"
+//#load "SBETypeProvider.fs"
+//#r "./bin/Debug/SBETypeProvider.dll"
+open SBETypeProvider.Provided
+#time "on"
+let mutable sum = 0L
+for i = 0 to 10000000 do
+  sum <- sum + int64 MyStruct.MyProperty2
 
-#load "Library1.fs"
-open SBETypeProvider
-
-// Define your library scripting code here
-
+//
+//
+//let tp = SBEProvider()
