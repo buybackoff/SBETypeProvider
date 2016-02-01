@@ -113,17 +113,17 @@ type SbeMessageSchema () =
 
   static let primitives = new Dictionary<SbeTypeName,PrimitiveType>()
   static do
-    primitives.Add("char", new PrimitiveType(Type = typeof<sbyte>, Size = sizeof<sbyte>))
-    primitives.Add("int8", new PrimitiveType(Type = typeof<int8>, Size = sizeof<int8>))
-    primitives.Add("int16", new PrimitiveType(Type = typeof<int16>, Size = sizeof<int16>))
-    primitives.Add("int32", new PrimitiveType(Type = typeof<int32>, Size = sizeof<int32>))
-    primitives.Add("int64", new PrimitiveType(Type = typeof<int64>, Size = sizeof<int64>))
-    primitives.Add("uint8", new PrimitiveType(Type = typeof<uint8>, Size = sizeof<uint8>))
-    primitives.Add("uint16", new PrimitiveType(Type = typeof<uint16>, Size = sizeof<uint16>))
-    primitives.Add("uint32", new PrimitiveType(Type = typeof<uint32>, Size = sizeof<uint32>))
-    primitives.Add("uint64", new PrimitiveType(Type = typeof<uint64>, Size = sizeof<uint64>))
-    primitives.Add("float", new PrimitiveType(Type = typeof<float32>, Size = sizeof<float32>))
-    primitives.Add("double", new PrimitiveType(Type = typeof<double>, Size = sizeof<double>))
+    primitives.["char"] <- new PrimitiveType(Type = typeof<sbyte>, Size = sizeof<sbyte>)
+    primitives.["int8"] <- new PrimitiveType(Type = typeof<int8>, Size = sizeof<int8>)
+    primitives.["int16"] <- new PrimitiveType(Type = typeof<int16>, Size = sizeof<int16>)
+    primitives.["int32"] <- new PrimitiveType(Type = typeof<int32>, Size = sizeof<int32>)
+    primitives.["int64"] <- new PrimitiveType(Type = typeof<int64>, Size = sizeof<int64>)
+    primitives.["uint8"] <- new PrimitiveType(Type = typeof<uint8>, Size = sizeof<uint8>)
+    primitives.["uint16"] <- new PrimitiveType(Type = typeof<uint16>, Size = sizeof<uint16>)
+    primitives.["uint32"] <- new PrimitiveType(Type = typeof<uint32>, Size = sizeof<uint32>)
+    primitives.["uint64"]<- new PrimitiveType(Type = typeof<uint64>, Size = sizeof<uint64>)
+    primitives.["float"] <- new PrimitiveType(Type = typeof<float32>, Size = sizeof<float32>)
+    primitives.["double"] <- new PrimitiveType(Type = typeof<double>, Size = sizeof<double>)
   static member PrimitiveTypes with get() = primitives :> IReadOnlyDictionary<SbeTypeName,PrimitiveType>
 
   member val Package = "" with get, set
@@ -159,7 +159,7 @@ type SbeMessageSchema () =
         ty.SemanticType <- xattr xe "semanticType"
         ty.Description <- xattr xe "description"
         ty.PrimitiveType <- SbeMessageSchema.PrimitiveTypes.[(xattr xe "primitiveType")]
-        ty.Length <- int <| (xattrd xe "length" "0")
+        ty.Length <- int <| (xattrd xe "length" "1")
         ty.CharacterEncoding <- xattr xe "characterEncoding"
         ty.DefaultValue <- xe.Value
         ty
@@ -254,9 +254,14 @@ type SbeMessageSchema () =
               for sty in cty.InnerTypes do
                 let compField = new Field()
                 compField.Name <- sty.Name
-                compField.Offset <- accOffset
-                compField.Size <- sty.PrimitiveType.Size * sty.Length
-                size <- size + compField.Size
+                if sty.Presence <> SbePresence.Constant then
+                  compField.Offset <- size
+                  compField.Size <- sty.PrimitiveType.Size * sty.Length
+                  size <- size + compField.Size
+                else
+                  // constants are not on the wire
+                  compField.Offset <- -1
+                  compField.Size <- sty.PrimitiveType.Size * sty.Length
                 field.CompositeFields.Add(compField)
               field.Size <- size
             // TODO enums and sets
@@ -267,7 +272,7 @@ type SbeMessageSchema () =
 
       let elements = processInnerElements (xeMessage.Elements()) 0
       message.MessageElements.AddRange(elements)
-
+      this.Messages.Add(message.Name, message)
       // next message
       try parseAux (xeMessage.ElementsAfterSelf().First())
       with
