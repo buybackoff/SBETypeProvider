@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f551bc73-8636-4f93-b626-2cad4e12bfdc</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>SBETypeProvider</RootNamespace>
     <AssemblyName>SBETypeProvider</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -55,11 +55,13 @@
     <Compile Include="ProvidedTypes.fsi" />
     <Compile Include="ProvidedTypes.fs" />
     <Compile Include="DebugProvidedTypes.fs" />
+    <Compile Include="SbeMessageSchema.fs" />
     <Compile Include="SBETypeProvider.fs" />
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
-    <Compile Include="SBEElements.fs" />
     <Content Include="Car.xml" />
+    <Content Include="FIX.xml" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

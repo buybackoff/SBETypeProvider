@@ -4,7 +4,7 @@
 #r "./bin/Release/Spreads.Collections.dll"
 #r "./bin/Release/Spreads.Extensions.dll"
 //#load "ProvidedTypes.fs"
-#load "SBEElements.fs"
+#load "SbeMessageSchema.fs"
 //#r "./bin/Debug/SBETypeProvider.dll"
 //open SBETypeProvider.Provided
 #time "on"
@@ -21,14 +21,19 @@ open System
 open System.Linq
 open System.Xml.Linq
 
-car.Root.Name.LocalName
+XmlHelper.car.Root.Name.LocalName
 
 let parse (xd:XDocument) =
-  let schema = MessageSchema()
+  let schema = SbeMessageSchema()
   let rec parseAux (xe:XElement) =
     match ln xe with
     | "messageSchema" -> 
-      schema.Package <- xe.Attribute(xn "package").Value
+      schema.Package <- xattr xe "package"
+      schema.Id <- int <| xattrd xe "id" "0"
+      schema.Version <- int <| xattrd xe "version" "0"
+      schema.SemanticVersion <- xattr xe "semanticVersion"
+      schema.Description <- xattr xe "description"
+      schema.ByteOrder <- xattrd xe "byteOrder" "littleEndian"
       parseAux (xe.Descendants().First())
     | "types" -> 
       parseTypes xe (xe.Descendants())
