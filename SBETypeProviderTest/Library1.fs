@@ -2,13 +2,15 @@
 open SBETypeProvider
 open System
 open System.Linq
+open Spreads
+open Spreads.Serialization
 
-type Sbe = SbeProvider<"..\..\..\SBETypeProvider\Car.xml">
+type CarSchema = SbeProvider<"D:\MD\Dev\Projects\SBETypeProvider\SBETypeProvider\Car.xml">
 
 module Test =
-  let sbe = Sbe()
-  let schema = sbe.Schema
-
+  let carSchema = CarSchema()
+  let car = carSchema.Car(null)
+  
   [<EntryPoint>]
   let print _ =
     //let ft = SBETypeProvider.MyStruct.MyProperty2
